@@ -1,0 +1,9 @@
+# wildcards
+**/*.rs.bk
+/*/Cargo.lock
+/*/target
+# specific files
+/cadence.db
+/Cargo.lock
+/__pycache__/
+/target/
