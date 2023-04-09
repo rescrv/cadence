@@ -1,0 +1,13 @@
+Cadence
+=======
+
+Cadence is a rhythm manager.  See
+http://rescrv.net/w/2023/04/04/detecting-mania/ for more information.
+
+Included are two implementations.
+
+rust:  This version is single-user command-line.  Mostly complete.  Supports
+smoothing and deferring.  Bugs are tagged with TODO.
+
+python:  Multi-user version meant to be embedded in a web app.  Does not
+support smoothing, but does support deferring better.  Fewer bugs.
