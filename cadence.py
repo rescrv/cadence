@@ -7,6 +7,8 @@ import argparse
 import base64
 import collections
 import datetime
+import heapq
+import math
 import sqlite3
 import unittest
 import uuid
@@ -41,6 +43,9 @@ class Daily:
     @property
     def slider(self):
         return Slider(0, 0)
+
+    def approximate_periodicity(self):
+        return 1
 
     def __str__(self):
         return self.id + ' ' + self.desc
@@ -81,6 +86,9 @@ class Monthly:
     def slider(self):
         return self._slider
 
+    def approximate_periodicity(self):
+        return 31
+
     def __str__(self):
         return '{} dotm:{} slider:{},{} {}'.format(self.id, self.dotm, self.slider.before, self.slider.after, self.desc)
 
@@ -120,6 +128,9 @@ class WeekDaily:
     def slider(self):
         return self._slider
 
+    def approximate_periodicity(self):
+        return 7
+
     def __str__(self):
         return '{} dotw:{} slider:{},{} {}'.format(self.id, self.dotw, self.slider.before, self.slider.after, self.desc)
 
@@ -155,6 +166,9 @@ class EveryNDays:
     @property
     def slider(self):
         return self._slider
+
+    def approximate_periodicity(self):
+        return self.n
 
     def __str__(self):
         return '{} n:{} slider:{},{} {}'.format(self.id, self.n, self.slider.before, self.slider.after, self.desc)
@@ -202,6 +216,29 @@ def parse_sql_date_or_datetime_as_date(when):
             err = e
     if err is not None:
         raise err
+
+
+def mean(X):
+    total = 0
+    count = 0
+    for x in X:
+        count += x
+        total += 1
+    if total == 0:
+        return 0
+    return count / total
+
+
+class Smoothing:
+
+    def __init__(self, rhythm, original_beat):
+        self.original_beat = original_beat
+        self.remaining_choices = []
+        self.passed_over_choices = []
+        for i in range(rhythm.slider.before):
+            self.remaining_choices.append(original_beat - i * ONE_DAY)
+        for i in range(rhythm.slider.after):
+            self.remaining_choices.append(original_beat + i * ONE_DAY)
 
 
 class CadenceApp:
@@ -357,6 +394,55 @@ class CadenceApp:
         self._conn.execute('INSERT INTO events (email, id, what, ts) VALUES (?, ?, "skip", ?)', (self._email, id, when))
         self._conn.commit()
 
+    def schedule(self, start=None, limit=None):
+        return self._schedule(start, limit, 0)
+
+    def _schedule(self, start, limit, recurse):
+        # Our output
+        schedule = {}
+        # Gather rhythms and events.
+        rhythms = list(self.list_rhythms())
+        events = collections.defaultdict(list)
+        for event in self._conn.execute('SELECT id, what, ts FROM events WHERE email=?', (self._email,)):
+            when = parse_sql_date_or_datetime_as_date(event[2])
+            what = event[1]
+            events[event[0]].append(Latest(when=when, what=what))
+        events = dict(events)
+        for event_list in events.values():
+            event_list.sort()
+        # Create a time window for our query.
+        start = start or datetime.date.today()
+        limit = limit or datetime.date.today() + datetime.timedelta(days=30)
+        # Our heap queue.
+        smooth_rhythms = []
+        for rhythm in rhythms:
+            rhythm_events = sorted(events.get(rhythm.id, []), key=lambda ev: ev.when)
+            if len(rhythm_events) > 0:
+                first_beat = continuing_beat(rhythm, start, rhythm_events[-1].when)
+            else:
+                first_beat = rhythm.start_beat(start)
+            smoothing = Smoothing(rhythm, first_beat)
+            heapq.heappush(smooth_rhythms, (first_beat, 0 - rhythm.approximate_periodicity(), smoothing, rhythm))
+        while len(smooth_rhythms) > 0:
+            day, periodicity, smoothing, rhythm = heapq.heappop(smooth_rhythms)
+            global_average = mean((len(slot) for slot in schedule.values()))
+            window = [day] + smoothing.remaining_choices + smoothing.passed_over_choices
+            if all((x < start or x >= limit for x in window)):
+                continue
+            local_average = mean((len(schedule.get(slot, [])) for slot in window))
+            slots_per_day = math.ceil(max(global_average + 1, local_average + 1, recurse))
+            if day not in schedule:
+                schedule[day] = []
+            slots = schedule[day]
+            if len(slots) < slots_per_day:
+                slots.append(rhythm)
+                next_day = rhythm.next_beat(day)
+                smoothing = Smoothing(rhythm, next_day)
+                heapq.heappush(smooth_rhythms, (next_day, 0 - rhythm.approximate_periodicity(), smoothing, rhythm))
+            else:
+                return self._schedule(start, limit, recurse)
+        return schedule
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='cadence is a rhythm manager')
@@ -403,6 +489,8 @@ if __name__ == '__main__':
 
     # schedule
     parser_schedule = subparsers.add_parser('schedule', help='schedule the rhythms')
+    parser_schedule.add_argument('--start', help='the start day for this schedule')
+    parser_schedule.add_argument('--limit', help='the limit day for this schedule')
 
     args = parser.parse_args()
     conn = sqlite3.connect('cadence.db')
@@ -426,7 +514,9 @@ if __name__ == '__main__':
     elif args.cmd == 'skip':
         app.skip(args.id)
     elif args.cmd == 'schedule':
-        for day, rhythms in app.schedule().items():
+        start = parse_sql_date_or_datetime_as_date(args.start)
+        limit = parse_sql_date_or_datetime_as_date(args.limit)
+        for day, rhythms in app.schedule(start=start, limit=limit).items():
             for rhythm in rhythms:
                 print(day, rhythm)
             print()
