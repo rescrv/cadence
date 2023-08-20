@@ -157,7 +157,10 @@ def create_table_if_not_exist(conn, table_name, table_definition):
 
 
 def generate_id():
-    return base64.urlsafe_b64encode(uuid.uuid4().bytes).rstrip(b'=').decode('ascii')
+    while True:
+        x = base64.urlsafe_b64encode(uuid.uuid4().bytes).rstrip(b'=').decode('ascii')
+        if not x.startswith('-'):
+            return x
 
 
 def parse_sql_date_or_datetime_as_date(when):
