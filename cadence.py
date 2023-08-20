@@ -135,7 +135,7 @@ class EveryNDays:
         return '{} n:{} slider:{},{} {}'.format(self.id, self.n, self.slider.before, self.slider.after, self.desc)
 
 
-def starting_beat(rhythm, start, last_seen):
+def continuing_beat(rhythm, start, last_seen):
     # This beat should necessarily the first beat after last_seen.
     beat = rhythm.next_beat(last_seen)
     # Somethimes slider will move to before a given date, e.g. a Thursday task move to Wednesday.

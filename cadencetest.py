@@ -123,24 +123,24 @@ class TestEveryNDays(unittest.TestCase):
         assert every_n_days.slider.after == 0
 
 
-class TestStartingBeat(unittest.TestCase):
+class TestContinuingBeat(unittest.TestCase):
 
     def test_daily(self):
         start = datetime.datetime(2022, 11, 20, 10, 35, 57)
         last_seen = datetime.datetime(2022, 11, 19, 10, 35, 57)
-        beat = starting_beat(TestDaily.DAILY, start, last_seen)
+        beat = continuing_beat(TestDaily.DAILY, start, last_seen)
         assert beat == datetime.datetime(2022, 11, 20, 10, 35, 57)
 
     def test_monthly(self):
         start = datetime.datetime(2022, 11, 20, 10, 35, 57)
         last_seen = datetime.datetime(2022, 10, 20, 10, 35, 57)
-        beat = starting_beat(TestMonthly.MONTHLY, start, last_seen)
+        beat = continuing_beat(TestMonthly.MONTHLY, start, last_seen)
         assert beat == datetime.datetime(2022, 12, 18, 10, 35, 57)
 
     def test_monthly_same_day(self):
         start = datetime.datetime(2022, 11, 18, 10, 35, 57)
         last_seen = datetime.datetime(2022, 10, 17, 10, 35, 57)
-        beat = starting_beat(TestMonthly.MONTHLY, start, last_seen)
+        beat = continuing_beat(TestMonthly.MONTHLY, start, last_seen)
         assert beat == datetime.datetime(2022, 11, 18, 10, 35, 57)
 
 
