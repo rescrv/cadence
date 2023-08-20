@@ -16,6 +16,9 @@ class TestDaily(unittest.TestCase):
 
     DAILY = Daily('id', 'some daily rhythm')
 
+    def test_start_beat(self):
+        assert self.DAILY.start_beat(datetime.date(2023, 8, 19)) == datetime.date(2023, 8, 19)
+
     def test_next_beat(self):
         assert self.DAILY.next_beat(datetime.date(2022, 11, 20)) == datetime.date(2022, 11, 21)
 
@@ -30,6 +33,12 @@ class TestDaily(unittest.TestCase):
 class TestMonthly(unittest.TestCase):
 
     MONTHLY = Monthly('id', 'some monthly rhythm', 18, Slider(7, 3))
+
+    def test_start_beat_same_day(self):
+        assert self.MONTHLY.start_beat(datetime.date(2022, 11, 18)) == datetime.date(2022, 11, 18)
+
+    def test_startbeat_different_day(self):
+        assert self.MONTHLY.start_beat(datetime.date(2022, 11, 20)) == datetime.date(2022, 12, 18)
 
     def test_next_beat_same_day(self):
         assert self.MONTHLY.next_beat(datetime.date(2022, 11, 18)) == datetime.date(2022, 12, 18)
@@ -57,6 +66,12 @@ class TestWeekDaily(unittest.TestCase):
 
     WEEK_DAILY = WeekDaily('id', 'some week daily rhythm', 5, Slider(2, 1))
 
+    def test_start_beat_same_day(self):
+        assert self.WEEK_DAILY.start_beat(datetime.date(2022, 11, 19)) == datetime.date(2022, 11, 19)
+
+    def test_start_beat_different_day(self):
+        assert self.WEEK_DAILY.start_beat(datetime.date(2022, 11, 20)) == datetime.date(2022, 11, 26)
+
     def test_next_beat_same_day(self):
         assert self.WEEK_DAILY.next_beat(datetime.date(2022, 11, 19)) == datetime.date(2022, 11, 26)
 
@@ -82,6 +97,9 @@ class TestWeekDaily(unittest.TestCase):
 class TestEveryNDays(unittest.TestCase):
 
     EVERY_N_DAYS = EveryNDays('id', 'some rhythm that happens every n days', 5, Slider(1, 2))
+
+    def test_start_beat(self):
+        assert self.EVERY_N_DAYS.start_beat(datetime.date(2023, 8, 19)) == datetime.date(2023, 8, 22)
 
     def test_next_beat(self):
         assert self.EVERY_N_DAYS.next_beat(datetime.date(2022, 11, 20)) == datetime.date(2022, 11, 25)

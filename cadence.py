@@ -29,6 +29,9 @@ class Daily:
         self.id = id
         self.desc = desc
 
+    def start_beat(self, date):
+        return date
+
     def next_beat(self, date):
         return date + ONE_DAY
 
@@ -53,6 +56,12 @@ class Monthly:
         self.desc = desc
         self.dotm = dotm
         self._slider = slider or Slider(0, 0)
+
+    def start_beat(self, date):
+        # NOTE(rescrv): Intentionally bail if on this day of the month.
+        while date.day != self.dotm:
+            date = date + ONE_DAY
+        return date
 
     def next_beat(self, date):
         if date.day == self.dotm:
@@ -87,6 +96,12 @@ class WeekDaily:
         self.dotw = dotw
         self._slider = slider or Slider(0, 0)
 
+    def start_beat(self, date):
+        # NOTE(rescrv): Intentionally bail if on this day of the week.
+        while date.weekday() != self.dotw:
+            date = date + ONE_DAY
+        return date
+
     def next_beat(self, date):
         if date.weekday() == self.dotw:
             date = date + ONE_DAY
@@ -120,6 +135,16 @@ class EveryNDays:
         self.desc = desc
         self.n = n
         self._slider = slider or Slider(0, 0)
+
+    def start_beat(self, start):
+        if self.n >= 7:
+            return start
+        date = start - 7 * ONE_DAY
+        while date.weekday() != self.n:
+            date = date + ONE_DAY
+        while date < start:
+            date = self.next_beat(date)
+        return date
 
     def next_beat(self, date):
         return date + datetime.timedelta(days=self.n)
