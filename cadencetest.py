@@ -175,6 +175,25 @@ class TestAddDaily(unittest.TestCase):
         assert dailies[0][1] == rhythms[0][1]
 
 
+class TestEditDaily(unittest.TestCase):
+
+    DESC = 'test description of a daily task'
+    NEW_DESC = 'test edited daily task'
+
+    def test_edit_desc(self):
+        conn = sqlite3.connect(':memory:')
+        app = CadenceApp(conn, TEST_EMAIL)
+        app.add_daily(self.DESC)
+        rhythm_id = [rhythm.id for rhythm in app.list_rhythms()]
+        assert len(rhythm_id) == 1
+        app.edit_daily(rhythm_id[0], desc=self.NEW_DESC)
+        rhythms = list(conn.execute('SELECT email, id, desc FROM rhythms'))
+        assert len(rhythms) == 1
+        assert rhythms[0][0] == TEST_EMAIL
+        assert len(rhythms[0][1]) == 22
+        assert rhythms[0][2] == self.NEW_DESC
+
+
 class TestAddMonthly(unittest.TestCase):
 
     DESC = 'test description of a monthly task'
@@ -208,6 +227,53 @@ class TestAddMonthly(unittest.TestCase):
         app = CadenceApp(conn, TEST_EMAIL)
         with self.assertRaises(ValueError):
             app.add_monthly(self.DESC, 32)
+
+
+class TestEditMonthly(unittest.TestCase):
+
+    DESC = 'test description of a monthly task'
+    NEW_DESC = 'test edited monthly task'
+
+    def test_edit_desc(self):
+        conn = sqlite3.connect(':memory:')
+        app = CadenceApp(conn, TEST_EMAIL)
+        app.add_monthly(self.DESC, 5)
+        rhythm_id = [rhythm.id for rhythm in app.list_rhythms()]
+        assert len(rhythm_id) == 1
+        app.edit_monthly(rhythm_id[0], desc=self.NEW_DESC, dotm=None, slider_before=None, slider_after=None)
+        rhythms = list(conn.execute('SELECT email, id, desc FROM rhythms'))
+        assert len(rhythms) == 1
+        assert rhythms[0][0] == TEST_EMAIL
+        assert len(rhythms[0][1]) == 22
+        assert rhythms[0][2] == self.NEW_DESC
+
+    def test_edit_dotm(self):
+        conn = sqlite3.connect(':memory:')
+        app = CadenceApp(conn, TEST_EMAIL)
+        app.add_monthly(self.DESC, 5)
+        rhythm_id = [rhythm.id for rhythm in app.list_rhythms()]
+        assert len(rhythm_id) == 1
+        app.edit_monthly(rhythm_id[0], desc=None, dotm=7, slider_before=None, slider_after=None)
+        rhythms = list(conn.execute('SELECT dotm FROM monthlies'))
+        assert len(rhythms) == 1
+        assert rhythms[0][0] == 7
+        rhythms = list(conn.execute('SELECT email, id, desc FROM rhythms'))
+        assert len(rhythms) == 1
+        assert rhythms[0][0] == TEST_EMAIL
+        assert len(rhythms[0][1]) == 22
+        assert rhythms[0][2] == self.DESC
+
+    def test_edit_slider(self):
+        conn = sqlite3.connect(':memory:')
+        app = CadenceApp(conn, TEST_EMAIL)
+        app.add_monthly(self.DESC, 5)
+        rhythm_id = [rhythm.id for rhythm in app.list_rhythms()]
+        assert len(rhythm_id) == 1
+        app.edit_monthly(rhythm_id[0], desc=None, dotm=None, slider_before=2, slider_after=3)
+        rhythms = list(conn.execute('SELECT slider_before, slider_after FROM monthlies'))
+        assert len(rhythms) == 1
+        assert rhythms[0][0] == 2
+        assert rhythms[0][1] == 3
 
 
 class TestAddWeekDaily(unittest.TestCase):
@@ -245,6 +311,41 @@ class TestAddWeekDaily(unittest.TestCase):
             app.add_week_daily(self.DESC, 7)
 
 
+class TestEditWeekDaily(unittest.TestCase):
+
+    DESC = 'test description of a week-daily task'
+    NEW_DESC = 'test edited week-daily task'
+
+    def test_edit_desc(self):
+        conn = sqlite3.connect(':memory:')
+        app = CadenceApp(conn, TEST_EMAIL)
+        app.add_week_daily(self.DESC, 1)
+        rhythm_id = [rhythm.id for rhythm in app.list_rhythms()]
+        assert len(rhythm_id) == 1
+        app.edit_week_daily(rhythm_id[0], desc=self.NEW_DESC, dotw=None, slider_before=None, slider_after=None)
+        rhythms = list(conn.execute('SELECT email, id, desc FROM rhythms'))
+        assert len(rhythms) == 1
+        assert rhythms[0][0] == TEST_EMAIL
+        assert len(rhythms[0][1]) == 22
+        assert rhythms[0][2] == self.NEW_DESC
+
+    def test_edit_dotw(self):
+        conn = sqlite3.connect(':memory:')
+        app = CadenceApp(conn, TEST_EMAIL)
+        app.add_week_daily(self.DESC, 5)
+        rhythm_id = [rhythm.id for rhythm in app.list_rhythms()]
+        assert len(rhythm_id) == 1
+        app.edit_week_daily(rhythm_id[0], desc=None, dotw=1, slider_before=None, slider_after=None)
+        rhythms = list(conn.execute('SELECT dotw FROM week_dailies'))
+        assert len(rhythms) == 1
+        assert rhythms[0][0] == 1
+        rhythms = list(conn.execute('SELECT email, id, desc FROM rhythms'))
+        assert len(rhythms) == 1
+        assert rhythms[0][0] == TEST_EMAIL
+        assert len(rhythms[0][1]) == 22
+        assert rhythms[0][2] == self.DESC
+
+
 class TestAddEveryNDays(unittest.TestCase):
 
     DESC = 'test description of a every-n-daily task'
@@ -274,6 +375,41 @@ class TestAddEveryNDays(unittest.TestCase):
             app.add_every_n_days(self.DESC, 1)
 
 
+class TestEditEveryNDays(unittest.TestCase):
+
+    DESC = 'test description of a every-n-daily task'
+    NEW_DESC = 'test edited every-n-daily task'
+
+    def test_edit_desc(self):
+        conn = sqlite3.connect(':memory:')
+        app = CadenceApp(conn, TEST_EMAIL)
+        app.add_every_n_days(self.DESC, 2)
+        rhythm_id = [rhythm.id for rhythm in app.list_rhythms()]
+        assert len(rhythm_id) == 1
+        app.edit_every_n_days(rhythm_id[0], desc=self.NEW_DESC, n=None, slider_before=None, slider_after=None)
+        rhythms = list(conn.execute('SELECT email, id, desc FROM rhythms'))
+        assert len(rhythms) == 1
+        assert rhythms[0][0] == TEST_EMAIL
+        assert len(rhythms[0][1]) == 22
+        assert rhythms[0][2] == self.NEW_DESC
+
+    def test_edit_n(self):
+        conn = sqlite3.connect(':memory:')
+        app = CadenceApp(conn, TEST_EMAIL)
+        app.add_every_n_days(self.DESC, 2)
+        rhythm_id = [rhythm.id for rhythm in app.list_rhythms()]
+        assert len(rhythm_id) == 1
+        app.edit_every_n_days(rhythm_id[0], desc=None, n=3, slider_before=None, slider_after=None)
+        rhythms = list(conn.execute('SELECT n FROM every_n_days'))
+        assert len(rhythms) == 1
+        assert rhythms[0][0] == 3
+        rhythms = list(conn.execute('SELECT email, id, desc FROM rhythms'))
+        assert len(rhythms) == 1
+        assert rhythms[0][0] == TEST_EMAIL
+        assert len(rhythms[0][1]) == 22
+        assert rhythms[0][2] == self.DESC
+
+
 class TestListRhythms(unittest.TestCase):
 
     def test_list_rhythms(self):
@@ -301,33 +437,23 @@ class TestDone(unittest.TestCase):
         app.done(rhythms[0].id)
         app.done(rhythms[0].id)
         events = list(conn.execute('SELECT id, what FROM events WHERE email=? AND id=?', (TEST_EMAIL, rhythms[0].id)))
-        assert len(events) == 3
+        assert len(events) == 1
         assert events[0][0] == rhythms[0].id
-        assert events[1][0] == rhythms[0].id
-        assert events[2][0] == rhythms[0].id
         assert events[0][1] == 'done'
-        assert events[1][1] == 'done'
-        assert events[2][1] == 'done'
 
 
-class TestSkip(unittest.TestCase):
+class TestDefer(unittest.TestCase):
 
-    def test_skip(self):
+    def test_defer(self):
         conn = sqlite3.connect(':memory:')
         app = CadenceApp(conn, TEST_EMAIL)
         app.add_daily(TestAddDaily.DESC)
         rhythms = list(app.list_rhythms())
-        app.skip(rhythms[0].id)
-        app.skip(rhythms[0].id)
-        app.skip(rhythms[0].id)
+        app.defer(rhythms[0].id)
         events = list(conn.execute('SELECT id,what FROM events WHERE email=? AND id=?', (TEST_EMAIL, rhythms[0].id)))
-        assert len(events) == 3
+        assert len(events) == 1
         assert events[0][0] == rhythms[0].id
-        assert events[1][0] == rhythms[0].id
-        assert events[2][0] == rhythms[0].id
-        assert events[0][1] == 'skip'
-        assert events[1][1] == 'skip'
-        assert events[2][1] == 'skip'
+        assert events[0][1] == 'defer'
 
 
 class TestParseSqlDateOrDatetimeAsDate(unittest.TestCase):

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Spoons{% endblock %}
+
+{% block main %}
+  <div class="header">
+    <h1>Spoons Management</h1>
+  </div>
+
+  <form method="POST" class="pure-form">
+    {% csrf_token %}
+    <div><button type="submit" class="pure-button pure-button-primary">Save</button></div>
+    <table id="schedule" class="pure-table pure-table-horizontal pure-table-striped">
+      {% for day in days.items %}
+      <tr><td>{{ day.0 }}</td><td><input type="range" name="date_{{ day.0|date:"Y-m-d" }}" min="0" max="10" value="{{ day.1 }}"/></td></tr>
+      {% endfor %}
+    </table>
+  </form>
+{% endblock %}

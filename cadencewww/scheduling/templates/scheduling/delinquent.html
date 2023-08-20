@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Delinquent Tasks{% endblock %}
+
+{% block main %}
+  <div class="header">
+    <h1>Delinquent Tasks</h1>
+  </div>
+
+  <div class="content"><h2 class="content-subhead">{{ when|striptags }}</h2></div>
+  <table id="schedule" class="pure-table pure-table-horizontal pure-table-striped">
+    {% if delinquent %}
+    {% for rhythm in delinquent %}
+    <tr>
+      <td class="table-button">
+        <form name="rhythm-{{ rhythm.id }}" method="POST" action="{% url 'mark-done' %}?next=delinquent">
+          {% csrf_token %}
+          <input type="hidden" name="rhythm_id" value="{{ rhythm.id }}" />
+          <input type="hidden" name="rhythm_when" value="{{ when|date:"Y-m-d" }}" />
+          <button type="submit" class="pure-button">done</button>
+        </form>
+      </td>
+      <td class="table-button">
+        {% if forloop.parentloop.counter == 1 %}
+        <form name="rhythm-{{ rhythm.id }}" method="POST" action="{% url 'mark-defer' %}">
+          {% csrf_token %}
+          <input type="hidden" name="rhythm_id" value="{{ rhythm.id }}" />
+          <input type="hidden" name="rhythm_when" value="{{ when|date:"Y-m-d" }}" />
+          <button type="submit" class="pure-button">defer</button>
+        </form>
+        {% endif %}
+      </td>
+      <td class="table-icon"><a class="linkicon" href="{% url 'rhythms-edit' rhythm.id %}?next=delinquent"><i data-feather="edit"></i></a></td>
+      <td>
+        {{ rhythm.desc | striptags }}
+      </td>
+    </tr>
+    {% endfor %}
+    {% else %}
+    There are no delinquent tasks
+    {% endif %}
+  </table>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% if next %}
+<form method="POST" class="pure-form pure-form-aligned" action="#?next={{next}}">
+{% else %}
+<form method="POST" class="pure-form pure-form-aligned">
+{% endif %}
+  {% csrf_token %}
+  {% for hidden_field in form.hidden_fields %}
+    {{ hidden_field }}
+    {% for err in hidden_field.errors %}
+    <span class="pure-form-message-inline">{{ err }}</span>
+    {% endfor %}
+  {% endfor %}
+  
+  {% if form.non_field_errors %}
+  {% for error in form.non_field_errors %}
+  <div class="form-error">
+    {{ error }}
+  </div>
+  {% endfor %}
+  {% endif %}
+  <fieldset>
+    {% for field in form.visible_fields %}
+    <div class="pure-control-group">
+      <label for="{{ field.name }}">{{ field.label }}</label>
+      {{ field }}
+      {% for err in field.errors %}
+      <span class="pure-form-message-inline">{{ err }}</span>
+      {% endfor %}
+    </div>
+    {% endfor %}
+    <div class="pure-controls">
+      <button type="submit" class="pure-button pure-button-primary">Submit</button>
+    </div>
+  </fieldset>
+</form>

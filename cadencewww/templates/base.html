@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+  <title>{% block title %}Cadence is a rhythm manager{% endblock %}</title>
+</head>
+<body>
+  <div id="layout">
+    <div id="menu">
+      <div class="pure-menu pure-menu-horizontal">
+        <a href="/" class="pure-menu-heading pure-menu-link">Cadence</a>
+        <ul class="pure-menu-list">
+          <li class="pure-menu-item"><a href="{% url 'full-schedule' %}" class="pure-menu-link">Scheduling</a></li>
+          <li class="pure-menu-item"><a href="{% url 'rhythms-index' %}" class="pure-menu-link">Rhythms</a></li>
+          <li class="pure-menu-item"><a href="{% url 'spoons' %}" class="pure-menu-link">Spoons</a></li>
+          <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+            <a href="#" id="menuLink1" class="pure-menu-link">Add</a>
+            <ul class="pure-menu-children">
+              <li class="pure-menu-item"><a href="{% url 'rhythms-add-daily' %}" class="pure-menu-link">Daily</a></li>
+              <li class="pure-menu-item"><a href="{% url 'rhythms-add-monthly' %}" class="pure-menu-link">Monthly</a></li>
+              <li class="pure-menu-item"><a href="{% url 'rhythms-add-week-daily' %}" class="pure-menu-link">Week Day</a></li>
+              <li class="pure-menu-item"><a href="{% url 'rhythms-add-every-n-days' %}" class="pure-menu-link">Every N Days</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div><!-- menu -->
+    <div id="main">
+      {% block main %}
+      {% endblock %}
+    </div>
+  </div><!-- layout -->
+  <script src="{% static 'feather.min.js' %}"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      feather.replace();
+      document.cookie = 'cadence_user_tz=' + Intl.DateTimeFormat().resolvedOptions().timeZone;
+    });
+  </script>
+  {% block scripts %}
+  {% endblock %}
+</body>
+</html>

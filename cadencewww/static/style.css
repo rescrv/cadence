@@ -1,0 +1,22 @@
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+/* Layout */
+#layout {
+    width: 76.9em;
+    margin: 0 auto;
+}
+#schedule {
+    width: 100%;
+}
+#schedule td {
+    text-align: left;
+}
+.table-button {
+    width: 8%;
+}
+.table-icon {
+    width: 2%;
+}

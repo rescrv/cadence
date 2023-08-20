@@ -1,2 +1,6 @@
+# wildcards
+*.pyc
 # specific files
-/__pycache__/
+__pycache__
+cadence.db
+db.sqlite3

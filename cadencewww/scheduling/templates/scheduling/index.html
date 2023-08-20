@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Rhythm Scheduling{% endblock %}
+
+{% block main %}
+  <div class="header">
+    <h1>Rhythm Scheduling</h1>
+  </div>
+
+  {% for when, rhythms in schedule.items %}
+  <div class="content"><h2 class="content-subhead">{{ when|striptags }}</h2></div>
+  <table id="schedule" class="pure-table pure-table-horizontal pure-table-striped">
+    {% if rhythms %}
+    {% for rhythm in rhythms %}
+    <tr>
+      {% if forloop.parentloop.counter == 1 %}
+      <td class="table-button">
+        <form name="rhythm-{{ rhythm.id }}" method="POST" action="{% url 'mark-done' %}">
+          {% csrf_token %}
+          <input type="hidden" name="rhythm_id" value="{{ rhythm.id }}" />
+          <input type="hidden" name="rhythm_when" value="{{ when|date:"Y-m-d" }}" />
+          <button type="submit" class="pure-button">done</button>
+        </form>
+      </td>
+      <td class="table-button">
+        <form name="rhythm-{{ rhythm.id }}" method="POST" action="{% url 'mark-defer' %}">
+          {% csrf_token %}
+          <input type="hidden" name="rhythm_id" value="{{ rhythm.id }}" />
+          <input type="hidden" name="rhythm_when" value="{{ when|date:"Y-m-d" }}" />
+          <button type="submit" class="pure-button">defer</button>
+        </form>
+      </td>
+      {% endif %}
+      <td class="table-icon"><a class="linkicon" href="{% url 'rhythms-edit' rhythm.id %}?next=schedule"><i data-feather="edit"></i></a></td>
+      <td>
+        {{ rhythm.desc | striptags }}
+      </td>
+    </tr>
+    {% endfor %}
+    {% else %}
+    <p>Congratulations.  This was a good day.</p>
+    {% endif %}
+  </table>
+  {% endfor %}
+{% endblock %}

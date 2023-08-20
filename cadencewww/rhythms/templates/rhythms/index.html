@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Rhythm Management{% endblock %}
+
+{% block main %}
+  <div class="header">
+    <h1>Rhythm Management</h1>
+  </div>
+  <table id="rhythms" class="pure-table pure-table-horizontal pure-table-striped">
+    {% for rhythm in rhythms %}
+    <tr>
+      <td><a class="linkicon" href="{% url 'rhythms-edit' rhythm.id %}"><i data-feather="edit"></i></a></td>
+      <td>
+        {{ rhythm.desc | striptags }}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

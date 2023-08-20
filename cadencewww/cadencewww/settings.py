@@ -25,12 +25,14 @@ SECRET_KEY = 'django-insecure-@8uncctvq46glt=m4hebj7oo3z54gz0c-6)qfy4xp22!8vqri2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['192.168.0.144']
 
 # Application definition
 
 INSTALLED_APPS = [
+    'scheduling.apps.SchedulingConfig',
+    'rhythms.apps.RhythmsConfig',
+    'cadencewww.middleware',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'cadencewww.middleware.CadenceAppMiddleware',
 ]
 
 ROOT_URLCONF = 'cadencewww.urls'
@@ -54,7 +57,7 @@ ROOT_URLCONF = 'cadencewww.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -116,6 +119,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

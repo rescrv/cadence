@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Rhythm{% endblock %}
+
+{% block main %}
+  <div class="header">
+    <h1>Add Rhythm</h1>
+  </div>
+  <ul>
+    <li><a href="{% url 'rhythms-add-daily' %}">Add Daily Rhythm:</a>
+      Daily rhythms capture actions that must be taken daily.</li>
+    <li><a href="{% url 'rhythms-add-monthly' %}">Add Monthly Rhythm:</a>
+      Monthly rhythms capture actions that must be taken around a specific day of the month.</li>
+    <li><a href="{% url 'rhythms-add-week-daily' %}">Add Week-Daily Rhythm:</a>
+      Week-daily rhythms capture actions that must be taken around a specific day of the week.</li>
+    <li><a href="{% url 'rhythms-add-every-n-days' %}">Add Every-N-Days Rhythm:</a>
+      Every-n-days rhythms capture actions that must be taken every so many days.</li>
+  </ul>
+{% endblock %}

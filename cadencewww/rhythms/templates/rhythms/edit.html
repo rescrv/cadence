@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Rhythm{% endblock %}
+
+{% block main %}
+  <div class="header">
+    <h1>Edit Rhythm
+      <a class="linkicon" href="{% url 'rhythms-delete' rhythm.id %}"><i data-feather="delete"></i></a>
+    </h1>
+  </div>
+  {% include 'includes/purecss_form.html' %}
+{% endblock %}
