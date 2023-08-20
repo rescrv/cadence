@@ -32,12 +32,6 @@ class Daily:
     def next_beat(self, date):
         return date + ONE_DAY
 
-    def next_skipped_beat(self, date):
-        return date + ONE_DAY
-
-    def next_new_beat(self, date):
-        return date
-
     def prev_beat(self, date):
         return date - ONE_DAY
 
@@ -66,14 +60,6 @@ class Monthly:
         while date.day != self.dotm:
             date = date + ONE_DAY
         return date
-
-    def next_skipped_beat(self, date):
-        return self.next_beat(date + ONE_DAY)
-
-    def next_new_beat(self, date):
-        if date.day == self.dotm:
-            return date
-        return self.next_beat(date)
 
     def prev_beat(self, date):
         if date.day == self.dotm:
@@ -108,14 +94,6 @@ class WeekDaily:
             date = date + ONE_DAY
         return date
 
-    def next_skipped_beat(self, date):
-        return self.next_beat(date + ONE_DAY)
-
-    def next_new_beat(self, date):
-        if date.weekday() == self.dotw:
-            return date
-        return self.next_beat(date)
-
     def prev_beat(self, date):
         if date.weekday() == self.dotw:
             date = date - ONE_DAY
@@ -145,12 +123,6 @@ class EveryNDays:
 
     def next_beat(self, date):
         return date + datetime.timedelta(days=self.n)
-
-    def next_skipped_beat(self, date):
-        return date + ONE_DAY
-
-    def next_new_beat(self, date):
-        return date
 
     def prev_beat(self, date):
         return date - datetime.timedelta(days=self.n)

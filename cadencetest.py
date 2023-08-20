@@ -21,16 +21,6 @@ class TestDaily(unittest.TestCase):
         next = self.DAILY.next_beat(when)
         assert next == datetime.datetime(2022, 11, 21, 9, 54, 10)
 
-    def test_next_skipped_beat(self):
-        when = datetime.datetime(2022, 11, 20, 9, 54, 10)
-        next = self.DAILY.next_skipped_beat(when)
-        assert next == datetime.datetime(2022, 11, 21, 9, 54, 10)
-
-    def test_next_new_beat(self):
-        when = datetime.datetime(2022, 11, 20, 9, 54, 10)
-        next = self.DAILY.next_new_beat(when)
-        assert next == datetime.datetime(2022, 11, 20, 9, 54, 10)
-
     def test_prev_beat(self):
         when = datetime.datetime(2022, 11, 20, 9, 54, 10)
         prev = self.DAILY.prev_beat(when)
@@ -53,26 +43,6 @@ class TestMonthly(unittest.TestCase):
     def test_next_beat_different_day(self):
         when = datetime.datetime(2022, 11, 20, 10, 3, 29)
         next = self.MONTHLY.next_beat(when)
-        assert next == datetime.datetime(2022, 12, 18, 10, 3, 29)
-
-    def test_next_skipped_beat_same_day(self):
-        when = datetime.datetime(2022, 11, 18, 10, 3, 29)
-        next = self.MONTHLY.next_skipped_beat(when)
-        assert next == datetime.datetime(2022, 12, 18, 10, 3, 29)
-
-    def test_next_skipped_beat_different_day(self):
-        when = datetime.datetime(2022, 11, 20, 10, 3, 29)
-        next = self.MONTHLY.next_skipped_beat(when)
-        assert next == datetime.datetime(2022, 12, 18, 10, 3, 29)
-
-    def test_next_new_beat_same_day(self):
-        when = datetime.datetime(2022, 11, 18, 10, 3, 29)
-        next = self.MONTHLY.next_new_beat(when)
-        assert next == datetime.datetime(2022, 11, 18, 10, 3, 29)
-
-    def test_next_new_beat_different_day(self):
-        when = datetime.datetime(2022, 11, 20, 10, 3, 29)
-        next = self.MONTHLY.next_new_beat(when)
         assert next == datetime.datetime(2022, 12, 18, 10, 3, 29)
 
     def test_prev_beat_same_day(self):
@@ -109,26 +79,6 @@ class TestWeekDaily(unittest.TestCase):
         next = self.WEEK_DAILY.next_beat(when)
         assert next == datetime.datetime(2022, 11, 26, 10, 15, 0)
 
-    def test_next_skipped_beat_same_day(self):
-        when = datetime.datetime(2022, 11, 19, 10, 15, 0)
-        next = self.WEEK_DAILY.next_skipped_beat(when)
-        assert next == datetime.datetime(2022, 11, 26, 10, 15, 0)
-
-    def test_next_skipped_beat_different_day(self):
-        when = datetime.datetime(2022, 11, 20, 10, 15, 0)
-        next = self.WEEK_DAILY.next_skipped_beat(when)
-        assert next == datetime.datetime(2022, 11, 26, 10, 15, 0)
-
-    def test_next_new_beat_same_day(self):
-        when = datetime.datetime(2022, 11, 19, 10, 15, 0)
-        next = self.WEEK_DAILY.next_new_beat(when)
-        assert next == datetime.datetime(2022, 11, 19, 10, 15, 0)
-
-    def test_next_new_beat_different_day(self):
-        when = datetime.datetime(2022, 11, 20, 10, 15, 0)
-        next = self.WEEK_DAILY.next_new_beat(when)
-        assert next == datetime.datetime(2022, 11, 26, 10, 15, 0)
-
     def test_prev_beat_same_day(self):
         when = datetime.datetime(2022, 11, 19, 10, 15, 0)
         prev = self.WEEK_DAILY.prev_beat(when)
@@ -157,16 +107,6 @@ class TestEveryNDays(unittest.TestCase):
         when = datetime.datetime(2022, 11, 20, 10, 23, 17)
         next = self.EVERY_N_DAYS.next_beat(when)
         assert next == datetime.datetime(2022, 11, 25, 10, 23, 17)
-
-    def test_next_skipped_beat(self):
-        when = datetime.datetime(2022, 11, 20, 10, 23, 17)
-        next = self.EVERY_N_DAYS.next_skipped_beat(when)
-        assert next == datetime.datetime(2022, 11, 21, 10, 23, 17)
-
-    def test_next_new_beat(self):
-        when = datetime.datetime(2022, 11, 20, 10, 23, 17)
-        next = self.EVERY_N_DAYS.next_new_beat(when)
-        assert next == datetime.datetime(2022, 11, 20, 10, 23, 17)
 
     def test_prev_beat(self):
         when = datetime.datetime(2022, 11, 20, 10, 23, 17)
