@@ -329,50 +329,6 @@ class CadenceApp:
         self._conn.execute('INSERT INTO events (email, id, what, ts) VALUES (?, ?, "skip", ?)', (self._email, id, when))
         self._conn.commit()
 
-    def schedule(self, start=None, limit=None):
-        rhythms = list(self.list_rhythms())
-        events = collections.defaultdict(list)
-        # TODO(rescrv):  Once further out, truncate this to latest events of each type.
-        for event in self._conn.execute('SELECT id, what, ts FROM events WHERE email=?', (self._email,)):
-            events[event[0]].append(Latest(when=event[2], what=event[1]))
-        events = dict(events)
-        for event_list in events.values():
-            event_list.sort()
-        start = start or datetime.date.today()
-        limit = limit or datetime.date.today() + datetime.timedelta(days=30)
-        latest_by_rhythm = {}
-        for rhythm in rhythms:
-            if rhythm.id in events:
-                try:
-                    when = datetime.datetime.strptime(events[rhythm.id][-1].when, '%Y-%m-%d %H:%M:%S.%f')
-                except ValueError:
-                    try:
-                        when = datetime.datetime.strptime(events[rhythm.id][-1].when, '%Y-%m-%d %H:%M:%S')
-                    except ValueError:
-                        when = datetime.datetime.strptime(events[rhythm.id][-1].when, '%Y-%m-%d')
-                latest = Latest(when=when.date(), what=events[rhythm.id][-1].what)
-            else:
-                # If it hasn't been done before, act as if it's a skip.
-                latest = Latest(when=rhythm.prev_beat(start), what='new')
-            latest_by_rhythm[rhythm] = latest
-        schedule = {}
-        day = start
-        while day < limit:
-            schedule[day] = []
-            for rhythm in rhythms:
-                latest = latest_by_rhythm[rhythm]
-                if latest.what == 'new':
-                    next_beat = rhythm.next_new_beat(start)
-                elif latest.what == 'skip':
-                    next_beat = rhythm.next_skipped_beat(latest.when)
-                else:
-                    next_beat = rhythm.next_beat(latest.when)
-                if next_beat <= day:
-                    schedule[day].append(rhythm)
-                    latest_by_rhythm[rhythm] = Latest(when=day, what='done')
-            day += ONE_DAY
-        return schedule
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='cadence is a rhythm manager')
