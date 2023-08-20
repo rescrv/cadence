@@ -188,6 +188,22 @@ def generate_id():
     return base64.urlsafe_b64encode(uuid.uuid4().bytes).rstrip(b'=').decode('ascii')
 
 
+def parse_sql_date_or_datetime_as_date(when):
+    PATTERNS = [
+        '%Y-%m-%d %H:%M:%S.%f',
+        '%Y-%m-%d %H:%M:%S',
+        '%Y-%m-%d',
+    ]
+    err = None
+    for pattern in PATTERNS:
+        try:
+            return datetime.datetime.strptime(when, pattern).date()
+        except ValueError as e:
+            err = e
+    if err is not None:
+        raise err
+
+
 class CadenceApp:
 
     def __init__(self, conn, email):

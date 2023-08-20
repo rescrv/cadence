@@ -396,6 +396,12 @@ class TestSkip(unittest.TestCase):
         assert events[2][1] == 'skip'
 
 
+class TestParseSqlDateOrDatetimeAsDate(unittest.TestCase):
+    assert datetime.date(2022, 11, 20) == parse_sql_date_or_datetime_as_date('2022-11-20 23:42:21.0')
+    assert datetime.date(2022, 11, 20) == parse_sql_date_or_datetime_as_date('2022-11-20 23:42:21')
+    assert datetime.date(2022, 11, 20) == parse_sql_date_or_datetime_as_date('2022-11-20')
+
+
 class TestSchedule(unittest.TestCase):
 
     def test_schedule(self):
