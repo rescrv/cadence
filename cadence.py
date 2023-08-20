@@ -379,6 +379,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     conn = sqlite3.connect('cadence.db')
     app = CadenceApp(conn, args.email)
+    if args.cmd is None:
+        args.cmd = 'schedule'
 
     if args.cmd == 'add-daily':
         app.add_daily(' '.join(args.desc))
