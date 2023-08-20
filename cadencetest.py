@@ -17,14 +17,10 @@ class TestDaily(unittest.TestCase):
     DAILY = Daily('id', 'some daily rhythm')
 
     def test_next_beat(self):
-        when = datetime.datetime(2022, 11, 20, 9, 54, 10)
-        next = self.DAILY.next_beat(when)
-        assert next == datetime.datetime(2022, 11, 21, 9, 54, 10)
+        assert self.DAILY.next_beat(datetime.date(2022, 11, 20)) == datetime.date(2022, 11, 21)
 
     def test_prev_beat(self):
-        when = datetime.datetime(2022, 11, 20, 9, 54, 10)
-        prev = self.DAILY.prev_beat(when)
-        assert prev == datetime.datetime(2022, 11, 19, 9, 54, 10)
+        assert self.DAILY.prev_beat(datetime.date(2022, 11, 20)) == datetime.date(2022, 11, 19)
 
     def test_slider(self):
         assert self.DAILY.slider.before == 0
@@ -36,24 +32,16 @@ class TestMonthly(unittest.TestCase):
     MONTHLY = Monthly('id', 'some monthly rhythm', 18, Slider(7, 3))
 
     def test_next_beat_same_day(self):
-        when = datetime.datetime(2022, 11, 18, 10, 3, 29)
-        next = self.MONTHLY.next_beat(when)
-        assert next == datetime.datetime(2022, 12, 18, 10, 3, 29)
+        assert self.MONTHLY.next_beat(datetime.date(2022, 11, 18)) == datetime.date(2022, 12, 18)
 
     def test_next_beat_different_day(self):
-        when = datetime.datetime(2022, 11, 20, 10, 3, 29)
-        next = self.MONTHLY.next_beat(when)
-        assert next == datetime.datetime(2022, 12, 18, 10, 3, 29)
+        assert self.MONTHLY.next_beat(datetime.date(2022, 11, 20)) == datetime.date(2022, 12, 18)
 
     def test_prev_beat_same_day(self):
-        when = datetime.datetime(2022, 11, 18, 10, 3, 29)
-        prev = self.MONTHLY.prev_beat(when)
-        assert prev == datetime.datetime(2022, 10, 18, 10, 3, 29)
+        assert self.MONTHLY.prev_beat(datetime.date(2022, 11, 18)) == datetime.date(2022, 10, 18)
 
     def test_prev_beat_different_day(self):
-        when = datetime.datetime(2022, 11, 17, 10, 3, 29)
-        prev = self.MONTHLY.prev_beat(when)
-        assert prev == datetime.datetime(2022, 10, 18, 10, 3, 29)
+        assert self.MONTHLY.prev_beat(datetime.date(2022, 11, 17)) == datetime.date(2022, 10, 18)
 
     def test_slider(self):
         assert self.MONTHLY.slider.before == 7
@@ -70,24 +58,16 @@ class TestWeekDaily(unittest.TestCase):
     WEEK_DAILY = WeekDaily('id', 'some week daily rhythm', 5, Slider(2, 1))
 
     def test_next_beat_same_day(self):
-        when = datetime.datetime(2022, 11, 19, 10, 15, 0)
-        next = self.WEEK_DAILY.next_beat(when)
-        assert next == datetime.datetime(2022, 11, 26, 10, 15, 0)
+        assert self.WEEK_DAILY.next_beat(datetime.date(2022, 11, 19)) == datetime.date(2022, 11, 26)
 
     def test_next_beat_different_day(self):
-        when = datetime.datetime(2022, 11, 20, 10, 15, 0)
-        next = self.WEEK_DAILY.next_beat(when)
-        assert next == datetime.datetime(2022, 11, 26, 10, 15, 0)
+        assert self.WEEK_DAILY.next_beat(datetime.date(2022, 11, 20)) == datetime.date(2022, 11, 26)
 
     def test_prev_beat_same_day(self):
-        when = datetime.datetime(2022, 11, 19, 10, 15, 0)
-        prev = self.WEEK_DAILY.prev_beat(when)
-        assert prev == datetime.datetime(2022, 11, 12, 10, 15, 0)
+        assert self.WEEK_DAILY.prev_beat(datetime.date(2022, 11, 19)) == datetime.date(2022, 11, 12)
 
     def test_prev_beat_different_day(self):
-        when = datetime.datetime(2022, 11, 18, 10, 15, 0)
-        prev = self.WEEK_DAILY.prev_beat(when)
-        assert prev == datetime.datetime(2022, 11, 12, 10, 15, 0)
+        assert self.WEEK_DAILY.prev_beat(datetime.date(2022, 11, 18)) == datetime.date(2022, 11, 12)
 
     def test_slider(self):
         assert self.WEEK_DAILY.slider.before == 2
@@ -104,14 +84,10 @@ class TestEveryNDays(unittest.TestCase):
     EVERY_N_DAYS = EveryNDays('id', 'some rhythm that happens every n days', 5, Slider(1, 2))
 
     def test_next_beat(self):
-        when = datetime.datetime(2022, 11, 20, 10, 23, 17)
-        next = self.EVERY_N_DAYS.next_beat(when)
-        assert next == datetime.datetime(2022, 11, 25, 10, 23, 17)
+        assert self.EVERY_N_DAYS.next_beat(datetime.date(2022, 11, 20)) == datetime.date(2022, 11, 25)
 
     def test_prev_beat(self):
-        when = datetime.datetime(2022, 11, 20, 10, 23, 17)
-        prev = self.EVERY_N_DAYS.prev_beat(when)
-        assert prev == datetime.datetime(2022, 11, 15, 10, 23, 17)
+        assert self.EVERY_N_DAYS.prev_beat(datetime.date(2022, 11, 20)) == datetime.date(2022, 11, 15)
 
     def test_slider(self):
         assert self.EVERY_N_DAYS.slider.before == 1
@@ -126,22 +102,22 @@ class TestEveryNDays(unittest.TestCase):
 class TestContinuingBeat(unittest.TestCase):
 
     def test_daily(self):
-        start = datetime.datetime(2022, 11, 20, 10, 35, 57)
-        last_seen = datetime.datetime(2022, 11, 19, 10, 35, 57)
+        start = datetime.date(2022, 11, 20)
+        last_seen = datetime.date(2022, 11, 19)
         beat = continuing_beat(TestDaily.DAILY, start, last_seen)
-        assert beat == datetime.datetime(2022, 11, 20, 10, 35, 57)
+        assert beat == datetime.date(2022, 11, 20)
 
     def test_monthly(self):
-        start = datetime.datetime(2022, 11, 20, 10, 35, 57)
-        last_seen = datetime.datetime(2022, 10, 20, 10, 35, 57)
+        start = datetime.date(2022, 11, 20)
+        last_seen = datetime.date(2022, 10, 20)
         beat = continuing_beat(TestMonthly.MONTHLY, start, last_seen)
-        assert beat == datetime.datetime(2022, 12, 18, 10, 35, 57)
+        assert beat == datetime.date(2022, 12, 18)
 
     def test_monthly_same_day(self):
-        start = datetime.datetime(2022, 11, 18, 10, 35, 57)
-        last_seen = datetime.datetime(2022, 10, 17, 10, 35, 57)
+        start = datetime.date(2022, 11, 18)
+        last_seen = datetime.date(2022, 10, 17)
         beat = continuing_beat(TestMonthly.MONTHLY, start, last_seen)
-        assert beat == datetime.datetime(2022, 11, 18, 10, 35, 57)
+        assert beat == datetime.date(2022, 11, 18)
 
 
 class TestCreateTableIfNotExists(unittest.TestCase):
